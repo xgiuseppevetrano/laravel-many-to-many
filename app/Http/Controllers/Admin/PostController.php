@@ -8,6 +8,7 @@ use Illuminate\Support\Str;
 
 use App\Post;
 use App\Category;
+use App\Tag;
 
 class PostController extends Controller
 {
@@ -31,8 +32,9 @@ class PostController extends Controller
     public function create()
     {
         $categories = Category::all();
+        $tags = Tag::all();
 
-        return view('admin.posts.create', compact('categories'));
+        return view('admin.posts.create', compact('categories', 'tags'));
     }
 
     /**
@@ -47,7 +49,8 @@ class PostController extends Controller
             'title' => 'required|string|max:255',
             'content' => 'required|string|max:65535',
             'published' => 'sometimes|accepted',
-            'category_id' => 'nullable|exists:categories,id'
+            'category_id' => 'nullable|exists:categories,id',
+            'tags' => 'nullable|exists:tags,id'
         ]);
 
         $data = $request->all();
@@ -55,9 +58,12 @@ class PostController extends Controller
         $newPost->fill($data);
 
         $newPost->slug = $this->getSlug($data['title']);
-
         $newPost->published = isset($data['published']);
         $newPost->save();
+
+        if(isset($data['tags'])) {
+            $newPost->tags()->sync($data['tags']);
+        }
 
         return redirect()->route('admin.posts.show', $newPost->id);
     }
@@ -82,8 +88,9 @@ class PostController extends Controller
     public function edit(Post $post)
     {
         $categories = Category::all();
+        $tags = Tag::all();
 
-        return view('admin.posts.edit', compact('post', 'categories'));
+        return view('admin.posts.edit', compact('post', 'categories', 'tags'));
     }
 
     /**
@@ -99,7 +106,8 @@ class PostController extends Controller
             'title' => 'required|string|max:255',
             'content' => 'required|string|max:65535',
             'published' => 'sometimes|accepted',
-            'category_id' => 'nullable|exists:categories,id'
+            'category_id' => 'nullable|exists:categories,id',
+            'tags' => 'nullable|exists:tags,id'
         ]);
 
         $data = $request->all();
@@ -112,6 +120,10 @@ class PostController extends Controller
         $post->published = isset($data['published']);
 
         $post->save();
+        
+        $tags = isset($data['tags']) ? $data['tags'] : [];
+        
+        $post->tags()->sync($tags);
 
         return redirect()->route('admin.posts.show', $post->id);
     }
