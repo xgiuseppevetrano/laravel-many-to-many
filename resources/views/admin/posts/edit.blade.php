@@ -37,7 +37,7 @@
                         @enderror
                     </div>
                     <div class="form-group">
-                        <p>Tags</p>
+                        <h6>Tags</h6>
                         @foreach ($tags as $tag)
                             <div class="form-check form-check-inline">
                                 <input class="form-check-input" type="checkbox" id="{{$tag['slug']}}" value="{{$tag['id']}}" name="tags[]" {{in_array($tag['id'], old('tags', $postTags)) ? 'checked' : ''}}>

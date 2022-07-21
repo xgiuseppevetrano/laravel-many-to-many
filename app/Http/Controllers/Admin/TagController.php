@@ -5,9 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use App\Category;
 
-class CategoryController extends Controller
+use App\Tag;
+
+class TagController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,9 +17,9 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $categories = Category::all();
+        $tags = Tag::all();
 
-        return view('admin.categories.index', compact('categories'));
+        return view('admin.tags.index', compact('tags'));
     }
 
     /**
@@ -28,7 +29,7 @@ class CategoryController extends Controller
      */
     public function create()
     {
-        return view('admin.categories.create');
+        return view('admin.tags.create');
     }
 
     /**
@@ -40,16 +41,16 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:100|unique:categories,name',
+            'name' => 'required|string|max:100|unique:tags,name',
         ]);
         $data = $request->all();
 
-        $newCategory = new Category();
-        $newCategory->name = $data['name'];
-        $newCategory->slug = Str::of($newCategory->name)->slug('-');
-        $newCategory->save();
+        $newTag = new Tag();
+        $newTag->name = $data['name'];
+        $newTag->slug = Str::of($newTag->name)->slug('-');
+        $newTag->save();
 
-        return redirect()->route('admin.categories.index');
+        return redirect()->route('admin.tags.index');
     }
 
     /**
@@ -58,9 +59,9 @@ class CategoryController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Category $category)
+    public function show(Tag $tag)
     {
-        return view('admin.categories.show', compact('category'));
+        return view('admin.tags.show', compact('tag'));
     }
 
     /**
@@ -69,9 +70,9 @@ class CategoryController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(Category $category)
+    public function edit(Tag $tag)
     {
-        return view('admin.categories.edit', compact('category'));
+        return view('admin.tags.edit', compact('tag'));
     }
 
     /**
@@ -81,18 +82,18 @@ class CategoryController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Category $category)
+    public function update(Request $request, Tag $tag)
     {
         $request->validate([
-            'name' => "required|string|max:100|unique:categories,name,{$category->id}",
+            'name' => "required|string|max:100|unique:tags,name,{$tag->id}",
         ]);
         $data = $request->all();
         
-        $category->name = $data['name'];
-        $category->slug = Str::of($category->name)->slug('-');
-        $category->save();
+        $tag->name = $data['name'];
+        $tag->slug = Str::of($tag->name)->slug('-');
+        $tag->save();
 
-        return redirect()->route('admin.categories.index');
+        return redirect()->route('admin.tags.index');
     }
 
     /**
@@ -101,10 +102,10 @@ class CategoryController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Category $category)
+    public function destroy(Tag $tag)
     {
-        $category->delete();
+        $tag->delete();
 
-        return redirect()->route('admin.categories.index');
+        return redirect()->route('admin.tags.index');
     }
 }
