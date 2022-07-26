@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddColumnCategoryIdPostsTable extends Migration
+class AddColumnUserIdPostsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,7 +14,7 @@ class AddColumnCategoryIdPostsTable extends Migration
     public function up()
     {
         Schema::table('posts', function (Blueprint $table) {
-            $table->foreignId('category_id')->nullable()->after('published')->constrained()->onDelete('set null');
+            $table->foreignId('user_id')->nullable()->after('category_id')->constrained()->onDelete('cascade');
         });
     }
 
@@ -26,8 +26,8 @@ class AddColumnCategoryIdPostsTable extends Migration
     public function down()
     {
         Schema::table('posts', function (Blueprint $table) {
-            $table->dropForeign(['category_id']);
-            $table->dropColumn('category_id');
+            $table->dropForeign(['user_id']);
+            $table->dropColumn('user_id');
         });
     }
 }

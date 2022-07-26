@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
 
 use App\Post;
 use App\Category;
@@ -19,7 +20,8 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::all();
+        $user = Auth::user();
+        $posts = $user['posts'];
 
         return view('admin.posts.index', compact('posts'));
     }
@@ -59,6 +61,9 @@ class PostController extends Controller
 
         $newPost->slug = $this->getSlug($data['title']);
         $newPost->published = isset($data['published']);
+
+        $newPost->user_id = Auth::id();
+
         $newPost->save();
 
         if(isset($data['tags'])) {
@@ -76,6 +81,10 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
+        if ($post['user_id'] !== Auth::id()) {
+            abort(403);
+        }
+
         return view('admin.posts.show', compact('post'));
     }
 
@@ -87,6 +96,10 @@ class PostController extends Controller
      */
     public function edit(Post $post)
     {
+        if ($post['user_id'] !== Auth::id()) {
+            abort(403);
+        }
+
         $categories = Category::all();
         $tags = Tag::all();
 
@@ -106,6 +119,10 @@ class PostController extends Controller
      */
     public function update(Request $request, Post $post)
     {
+        if ($post['user_id'] !== Auth::id()) {
+            abort(403);
+        }
+
         $request->validate([
             'title' => 'required|string|max:255',
             'content' => 'required|string|max:65535',
@@ -140,6 +157,10 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
+        if ($post['user_id'] !== Auth::id()) {
+            abort(403);
+        }
+
         $post->delete();
 
         return redirect()->route('admin.posts.index');
